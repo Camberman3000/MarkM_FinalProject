@@ -116,11 +116,34 @@ model.add(Dense(25))
 model.add(Dense(1))
 
 model.compile(loss='mean_squared_error', optimizer='adam')
-model.fit(x_train, y_train, epochs=1, batch_size=1)
-print(model.summary())
+model.fit(x_train, y_train, epochs=2, batch_size=1)
+print(model.summary())  # Print the summary of the training
 
+predictions = model.predict(x_test)
+print("0-1 scaled predictions", predictions)  # Print the price prediction (0-1 scaled value)
+inv_predictions = scaler.inverse_transform(predictions)
+print("Dollar value predictions", inv_predictions)
 
+inv_y_test = scaler.inverse_transform(y_test)
+print("Dollar value predictions - Y Test: ", inv_y_test)
 
+rmse = np.sqrt(np.mean((inv_predictions - inv_y_test) ** 2))
+print("RMSE: ", rmse)  # Root-mean-square deviation (lower = better)
 
+# DataFrame, for plotting multiple sets of graph data
+plotting_data = pd.DataFrame(
+    {
+        'original_test_data': inv_y_test.reshape(-1),
+        'predictions': inv_predictions.reshape(-1)
+    },
+    index=google_data.index[splitting_len+100:]
+)
+print(plotting_data.head())  # Get the first 5 rows, showing both the original values and the predictions
+plot_graph((15, 6), plotting_data, 'test data')
+
+# Plot a (concatenated) graph using both the plotting_data DataFrame and the Adjusted close value plot
+plot_graph((15, 6), pd.concat([Adj_close_price[:splitting_len+100], plotting_data], axis=0), 'whole data')
+
+model.save("Latest_stock_price_model.keras")
 
 
