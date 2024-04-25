@@ -155,16 +155,17 @@ def get_price_prediction():
     # Plot a (concatenated) graph using both the plotting_data DataFrame and the Adjusted close value plot
     plot_graph((15, 6), pd.concat([Adj_close_price[:splitting_len + 100], plotting_data], axis=0), 'whole data')
 
-    model.save("Latest_stock_price_model.keras")
-    prediction_str.set(plotting_data.tail(0))
+    #model.save("Latest_stock_price_model.keras")
+    #prediction_str.set(plotting_data.tail(0))
+    plot(plotting_data)
 
 
 # plot function is created for
 # plotting the graph in
 # tkinter window
-def plot():
+def plot(plot_data):
     # the figure that will contain the plot
-    fig = Figure(figsize=(5, 5),
+    fig = Figure(figsize=(14, 9),
                  dpi=100)
 
     # list of squares
@@ -174,7 +175,7 @@ def plot():
     plot1 = fig.add_subplot(111)
 
     # plotting the graph
-    plot1.plot(y)
+    plot1.plot(plot_data)
 
     # creating the Tkinter canvas
     # containing the Matplotlib figure
@@ -196,7 +197,7 @@ def plot():
 
 window = tk.Tk()
 window.title("Bitcoin Price Prediction")
-window.geometry('700x700')
+window.geometry('1600x1000')
 
 """
 centers a tkinter window
