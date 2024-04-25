@@ -14,11 +14,11 @@ from keras.layers import Dense, LSTM
 import tkinter as tk
 from tkinter import *
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
-                                               NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+import pandastable as pt
 
 end = datetime.now()
-start = datetime(end.year - 20, end.month, end.day)
+start = datetime(end.year - 10, end.month, end.day)
 
 stock = "BTC-USD"
 google_data = yf.download(stock, start, end)
@@ -143,8 +143,8 @@ def get_price_prediction():
     # DataFrame, for plotting multiple sets of graph data
     plotting_data = pd.DataFrame(
         {
-            'original_test_data': inv_y_test.reshape(-1),
-            'predictions': inv_predictions.reshape(-1)
+            'Actual Price': inv_y_test.reshape(-1),
+            'Predicted Price': inv_predictions.reshape(-1)
         },
         index=google_data.index[splitting_len + 100:]
     )
@@ -156,13 +156,19 @@ def get_price_prediction():
     plot_graph((15, 6), pd.concat([Adj_close_price[:splitting_len + 100], plotting_data], axis=0), 'whole data')
 
     #model.save("Latest_stock_price_model.keras")
-    #prediction_str.set(plotting_data.tail(0))
+
+
+    # Display a table of the predictions in a new window
+    d_table = tk.Toplevel()
+    d_table.title('Predictions for the past 10 years')
+    d_table = pt.Table(d_table, dataframe=plotting_data, showtoolbar=True, showstatusbar=True)
+    d_table.show()
+
+    # Plot the data in the main window
     plot(plotting_data)
 
 
-# plot function is created for
-# plotting the graph in
-# tkinter window
+# plotting the graph in a tkinter window
 def plot(plot_data):
     # the figure that will contain the plot
     fig = Figure(figsize=(14, 9),
@@ -218,16 +224,5 @@ window.deiconify()
 calculate_button = tk.Button(window, text="Get Prediction", command=get_price_prediction)
 calculate_button.grid(columnspan=1, row=1, padx=5, pady=5)
 
-prediction_str = tk.StringVar()
-prediction_str.set('')
-prediction_label = tk.Label(window, text="Predicted price")  # Accuracy label
-prediction_label.grid(column=0, row=2, padx=5, pady=5)
-prediction_box = tk.Entry(window)  # Accuracy textbox
-# entry.grid(column=1, row=4, padx=5, pady=5)
-prediction_box = Entry(textvariable=prediction_str, state=DISABLED).grid(column=1, row=2, padx=5, pady=5)
-
-# button that displays the plot
-plot_button = tk.Button(master=window, command=plot, width=10, text="Plot")
-plot_button.grid(column=2, columnspan=1, row=1, padx=5, pady=5)
 
 window.mainloop()
